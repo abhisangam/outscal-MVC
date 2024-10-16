@@ -9,6 +9,8 @@ public class TankView : MonoBehaviour
     private float rotation;
 
     private MeshRenderer[] childrenMeshRenderers;
+    [SerializeField] private BulletController bulletController;
+    private Transform bulletLauncherTransform;
     public void SetTankController(TankController tankController)
     {
         this.tankController = tankController;
@@ -19,7 +21,9 @@ public class TankView : MonoBehaviour
 
         GameObject cam = GameObject.Find("Main Camera");
         cam.transform.SetParent(transform, false);
-        cam.transform.position = new Vector3(0f, 3f, -4f); 
+        cam.transform.position = new Vector3(0f, 3f, -4f);
+
+        bulletLauncherTransform = gameObject.transform.Find("BulletLauncher");
     }
 
     // Update is called once per frame
@@ -36,6 +40,11 @@ public class TankView : MonoBehaviour
         if(rotation != 0)
         {
             tankController.Rotate(rotation, tankController.GetTankModel().rotationSpeed);
+        }
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            fireShell();
         }
     }
 
@@ -55,5 +64,11 @@ public class TankView : MonoBehaviour
         {
             renderer.material = material;
         }
+    }
+
+    private void fireShell()
+    {
+        GameObject.Instantiate(bulletController, bulletLauncherTransform.position, bulletLauncherTransform.rotation)
+            .SetInitialVelocity(bulletLauncherTransform.forward * 40);
     }
 }
